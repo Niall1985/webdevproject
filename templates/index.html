@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌄 Terrain Image Analyzer 🌍</title>
+    <link rel="stylesheet" href="static/styles.css"> <!-- Linking the CSS file -->
+</head>
+<body>
+    <h1>🌄 Terrain Image Analyzer 🌍</h1>
+    <p>Upload an image from your lodal machine to analyze the terrain in the image.</p>
+    <form id="upload-form" enctype="multipart/form-data">
+        <div class="upload-container">
+            <label for="file-upload" class="upload-btn">📸 Choose Image</label>
+            <input type="file" id="file-upload" name="file">
+            <button type="submit">🔬 Analyze Terrain</button>
+        </div>
+    </form>
+
+    <div id="image-preview"></div>
+    <div id="result"></div>
+
+    <script>
+        document.getElementById("upload-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+            
+            let formData = new FormData();
+            let fileInput = document.getElementById("file-upload");
+
+            if (fileInput.files.length === 0) {
+                alert("Please select an image first.");
+                return;
+            }
+
+            formData.append("file", fileInput.files[0]);
+
+            fetch("/predict", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    document.getElementById("image-preview").innerHTML = `<img src="${data.file_path}" width="200">`;
+                    document.getElementById("result").innerHTML = `<p>Predicted Terrain: ${data.prediction}</p>`;
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        });
+    </script>
+
+</body>
+</html>
