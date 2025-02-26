@@ -82,7 +82,7 @@ body {
     margin-top: 20px;
     display: none;
     animation: fadeIn 1.5s ease-in-out;
-    margin-left: ;
+    /* margin-left: ; */
 }
 
 .image-preview img {
@@ -161,4 +161,3 @@ progress {
         margin-top: 10px;
     }
 }
-
