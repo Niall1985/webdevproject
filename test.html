@@ -1,0 +1,152 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌄 Terrain Media Analyzer 🎥</title>
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+<body>
+    <h1>🌄 Terrain Media Analyzer 🎥</h1>
+    <p>Upload an <b>Image</b> or <b>Video</b> from your local machine, or choose <b>Live Streaming</b> for real-time terrain analysis.</p>
+
+    <form id="upload-form" enctype="multipart/form-data">
+        <div class="upload-container">
+            <label for="file-upload" class="upload-btn">📸 Choose File</label>
+            <input type="file" id="file-upload" name="file" accept="image/*,video/*">
+            <button type="submit">🔬 Analyze Terrain</button>
+        </div>
+    </form>
+
+    <button id="live-stream-btn">📡 Start Live Stream</button>
+
+    <div id="media-preview"></div>
+    <div id="upload-message"></div>
+    <div id="live-stream-container" style="display: none;">
+        <h2>📡 Live Terrain Analysis</h2>
+        <video id="live-stream" autoplay playsinline></video>
+        <p id="live-prediction">Prediction: <b>Waiting...</b></p>
+    </div>
+    
+    <div id="result"></div>
+
+    <script>
+        let liveStreamEnabled = false;
+        let livePredictionInterval;
+        const ipCameraUrl = "http://192.168.36.80:8080/video"; // Change if using webcam
+
+        // 📌 File Upload & Preview
+        document.getElementById("file-upload").addEventListener("change", function () {
+            let fileInput = this;
+            let previewDiv = document.getElementById("media-preview");
+            let messageDiv = document.getElementById("upload-message");
+
+            if (fileInput.files.length > 0) {
+                let file = fileInput.files[0];
+                let fileType = file.type.split("/")[0];
+                let reader = new FileReader();
+
+                reader.onload = function (e) {
+                    if (fileType === "image") {
+                        previewDiv.innerHTML = `<img src="${e.target.result}" width="200" alt="Uploaded Image">`;
+                    } else if (fileType === "video") {
+                        previewDiv.innerHTML = `
+                            <video width="300" controls>
+                                <source src="${e.target.result}" type="${file.type}">
+                                Your browser does not support the video tag.
+                            </video>
+                        `;
+                    }
+                    messageDiv.innerHTML = "<p style='color: green;'>✅ File uploaded successfully!</p>";
+                };
+
+                reader.readAsDataURL(file);
+            } else {
+                previewDiv.innerHTML = "";
+                messageDiv.innerHTML = "<p style='color: red;'>⚠️ No file selected!</p>";
+            }
+        });
+
+        // 📌 File Upload & Analysis
+        document.getElementById("upload-form").addEventListener("submit", async function (event) {
+            event.preventDefault();
+            
+            let formData = new FormData();
+            let fileInput = document.getElementById("file-upload");
+
+            if (fileInput.files.length === 0) {
+                alert("Please select a file first.");
+                return;
+            }
+
+            formData.append("file", fileInput.files[0]);
+
+            try {
+                let response = await fetch("/predict", {
+                    method: "POST",
+                    body: formData
+                });
+                let data = await response.json();
+
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    document.getElementById("result").innerHTML = `<p>Predicted Terrain: ${data.prediction}</p>`;
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Error processing the file.");
+            }
+        });
+
+        // 📡 Live Streaming (Webcam or IP Camera)
+        document.getElementById("live-stream-btn").addEventListener("click", async function () {
+            let videoElement = document.getElementById("live-stream");
+            let liveStreamContainer = document.getElementById("live-stream-container");
+
+            if (!liveStreamEnabled) {
+                liveStreamEnabled = true;
+                liveStreamContainer.style.display = "block";
+
+                try {
+                    if (ipCameraUrl.includes("192.168")) {
+                        // If using an IP Camera
+                        videoElement.src = ipCameraUrl;
+                    } else {
+                        // If using a webcam
+                        let stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                        videoElement.srcObject = stream;
+                    }
+                } catch (error) {
+                    console.error("Live stream error:", error);
+                    alert("Could not start live stream.");
+                    return;
+                }
+
+                // Start fetching terrain predictions every 3s
+                livePredictionInterval = setInterval(async () => {
+                    try {
+                        let response = await fetch("/predict_live");
+                        let data = await response.json();
+                        document.getElementById("live-prediction").innerHTML = `Prediction: <b>${data.prediction}</b>`;
+                    } catch (error) {
+                        console.error("Live stream error:", error);
+                    }
+                }, 3000);
+            } else {
+                liveStreamEnabled = false;
+                liveStreamContainer.style.display = "none";
+
+                if (videoElement.srcObject) {
+                    let tracks = videoElement.srcObject.getTracks();
+                    tracks.forEach(track => track.stop());
+                    videoElement.srcObject = null;
+                }
+                videoElement.src = "";
+                clearInterval(livePredictionInterval);
+            }
+        });
+    </script>
+
+</body>
+</html> -->
