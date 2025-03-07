@@ -3,24 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌄 Terrain Image Analyzer 🌍</title>
+    <title>🌄 Terrain Media Analyzer 🎥</title>
     <link rel="stylesheet" href="static/styles.css"> <!-- Linking the CSS file -->
 </head>
 <body>
-    <h1>🌄 Terrain Image Analyzer 🌍</h1>
-    <p>Upload an image from your lodal machine to analyze the terrain in the image.</p>
+    <h1>🌄 Terrain Media Analyzer 🎥</h1>
+    <p>Upload an <b>Image</b> or <b>Video</b> from your local machine to analyze the terrain.</p>
+
     <form id="upload-form" enctype="multipart/form-data">
         <div class="upload-container">
-            <label for="file-upload" class="upload-btn">📸 Choose Image</label>
-            <input type="file" id="file-upload" name="file">
+            <label for="file-upload" class="upload-btn">📸 Choose File</label>
+            <input type="file" id="file-upload" name="file" accept="image/*,video/*">
             <button type="submit">🔬 Analyze Terrain</button>
         </div>
     </form>
 
-    <div id="image-preview"></div>
+    <div id="media-preview"></div>
+    <div id="upload-message"></div>
     <div id="result"></div>
 
     <script>
+        document.getElementById("file-upload").addEventListener("change", function () {
+            let fileInput = document.getElementById("file-upload");
+            let previewDiv = document.getElementById("media-preview");
+            let messageDiv = document.getElementById("upload-message");
+
+            if (fileInput.files.length > 0) {
+                let file = fileInput.files[0];
+                let fileType = file.type.split("/")[0]; 
+                let reader = new FileReader();
+
+                reader.onload = function (e) {
+                    if (fileType === "image") {
+                        previewDiv.innerHTML = `<img src="${e.target.result}" width="200" alt="Uploaded Image">`;
+                    } else if (fileType === "video") {
+                        previewDiv.innerHTML = `
+                            <video width="300" controls>
+                                <source src="${e.target.result}" type="${file.type}">
+                                Your browser does not support the video tag.
+                            </video>
+                        `;
+                    }
+                    messageDiv.innerHTML = ""; 
+                };
+
+                reader.readAsDataURL(file);
+            } else {
+                previewDiv.innerHTML = "";
+                messageDiv.innerHTML = "<p style='color: green;'>✅ File uploaded successfully!</p>";
+            }
+        });
+
         document.getElementById("upload-form").addEventListener("submit", function (event) {
             event.preventDefault();
             
@@ -28,7 +61,7 @@
             let fileInput = document.getElementById("file-upload");
 
             if (fileInput.files.length === 0) {
-                alert("Please select an image first.");
+                alert("Please select a file first.");
                 return;
             }
 
@@ -43,7 +76,6 @@
                 if (data.error) {
                     alert(data.error);
                 } else {
-                    document.getElementById("image-preview").innerHTML = `<img src="${data.file_path}" width="200">`;
                     document.getElementById("result").innerHTML = `<p>Predicted Terrain: ${data.prediction}</p>`;
                 }
             })
