@@ -4,7 +4,7 @@
 The **Terrain Image Analyzer** is a web-based application that allows users to upload an image to analyze the type of terrain it represents. The system processes the image and predicts the terrain type using a backend model.  
 
 ### **Features**  
-✅ Upload an image/video from your device or choose live feed
+✅ Upload an image from your device or choose live feed
 ✅ Preview the uploaded image  
 ✅ Analyze terrain type using a machine learning model  
 ✅ User-friendly interface with modern UI design  
