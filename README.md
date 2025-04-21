@@ -49,8 +49,6 @@ The app will run at **`http://127.0.0.1:5000/`**
 ### **Project Structure**
 ```
 📂 terrain-analyzer
-│-- 📂 static
-│   ├── styles.css  # Frontend styling
 │-- 📂 templates
 │   ├── index.html  # Main frontend HTML
 │-- app.py  # Flask backend
